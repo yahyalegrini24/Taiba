@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Utensils, Flame, Salad } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Utensils, Flame, Salad, ChevronLeft, ChevronRight } from "lucide-react";
 
 const categories = [
   {
@@ -58,61 +58,60 @@ const categories = [
     ],
   },
   {
-  name: "أطباق عصرية",
-  key: "modern",
-  icon: <Utensils size={20} className="text-yellow-500" />,
-  dishes: [
-    {
-      name: "روز بالخضر",
-      description: "أرز مطبوخ مع خضروات موسمية وتوابل جزائرية.",
-      price: "850 دج",
-      image: "/rouz.jpg",
-    },
-    {
-      name: "غراتان",
-      description: "بطاطا مغطاة بالجبن وصوص بشاميل مشوية في الفرن.",
-      price: "950 دج",
-      image: "/gratin.jpg",
-    },
-    {
-      name: "بطاطا كوشة",
-      description: "بطاطا في الفرن مع توابل وزيت الزيتون ونكهات جزائرية.",
-      price: "800 دج",
-      image: "/koucha.jpg",
-    },
-    {
-      name: "صحن شاورما",
-      description: "شاورما دجاج متبلة، خبز طري، صوص وثومية، بطاطا مقلية.",
-      price: "950 دج",
-      image: "/shawarma.jpg",
-    },
-    {
-      name: "رولي",
-      description: "عجينة محشوة بالدجاج والخضار، مطهية ومقرمشة.",
-      price: "900 دج",
-      image: "/roule.jpg",
-    },
-    {
-      name: "لابيري",
-      description: "طبق مكرونة محشي بالجبن واللحم في صوص لذيذ.",
-      price: "1000 دج",
-      image: "/laperi.jpg",
-    },
-    {
-      name: "مقارونة",
-      description: "طبق مقارونة بصوص أحمر تقليدي ولحم مفروم.",
-      price: "850 دج",
-      image: "/macarona.jpg",
-    },
-    {
-      name: "سكالوب في لاكرام",
-      description: "شرائح دجاج مطهوة في صوص كريمي مع فطر وبهارات.",
-      price: "1200 دج",
-      image: "/scalope.jpg",
-    },
-  ],
-}
-,
+    name: "أطباق عصرية",
+    key: "modern",
+    icon: <Utensils size={20} className="text-yellow-500" />,
+    dishes: [
+      {
+        name: "روز بالخضر",
+        description: "أرز مطبوخ مع خضروات موسمية وتوابل جزائرية.",
+        price: "850 دج",
+        image: "/rouz.jpg",
+      },
+      {
+        name: "غراتان",
+        description: "بطاطا مغطاة بالجبن وصوص بشاميل مشوية في الفرن.",
+        price: "950 دج",
+        image: "/gratin.jpg",
+      },
+      {
+        name: "بطاطا كوشة",
+        description: "بطاطا في الفرن مع توابل وزيت الزيتون ونكهات جزائرية.",
+        price: "800 دج",
+        image: "/koucha.jpg",
+      },
+      {
+        name: "صحن شاورما",
+        description: "شاورما دجاج متبلة، خبز طري، صوص وثومية، بطاطا مقلية.",
+        price: "950 دج",
+        image: "/shawarma.jpg",
+      },
+      {
+        name: "رولي",
+        description: "عجينة محشوة بالدجاج والخضار، مطهية ومقرمشة.",
+        price: "900 دج",
+        image: "/roule.jpg",
+      },
+      {
+        name: "لابيري",
+        description: "طبق مكرونة محشي بالجبن واللحم في صوص لذيذ.",
+        price: "1000 دج",
+        image: "/laperi.jpg",
+      },
+      {
+        name: "مقارونة",
+        description: "طبق مقارونة بصوص أحمر تقليدي ولحم مفروم.",
+        price: "850 دج",
+        image: "/macarona.jpg",
+      },
+      {
+        name: "سكالوب في لاكرام",
+        description: "شرائح دجاج مطهوة في صوص كريمي مع فطر وبهارات.",
+        price: "1200 دج",
+        image: "/scalope.jpg",
+      },
+    ],
+  },
   {
     name: "السلطات",
     key: "salads",
@@ -137,6 +136,14 @@ const categories = [
 export default function DishesSection() {
   const [selectedCategory, setSelectedCategory] = useState("traditional");
   const activeCategory = categories.find((cat) => cat.key === selectedCategory);
+  const scrollRef = useRef(null);
+
+  const scroll = (direction) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const scrollAmount = direction === "left" ? -300 : 300;
+    container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
 
   return (
     <section className="bg-gray-50 py-20 px-4 sm:px-6 font-arabic" id="dishes">
@@ -163,14 +170,67 @@ export default function DishesSection() {
         ))}
       </div>
 
-      {/* Dishes Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-7xl mx-auto">
+      {/* Mobile Scroll Buttons (Positioned over the carousel) */}
+      <div className="relative sm:hidden">
+        <div className="overflow-x-auto sm:overflow-visible scrollbar-hide" ref={scrollRef}>
+
+          <div
+            className="flex gap-4"
+            style={{ scrollSnapType: "x mandatory" }}
+          >
+            {activeCategory?.dishes.map((dish, index) => (
+              <div
+                key={index}
+                className="min-w-full scroll-snap-align-start"
+              >
+                <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col">
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={dish.image}
+                      alt={dish.name}
+                      className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                    />
+                    <div className="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 text-sm rounded-full shadow">
+                      {dish.price}
+                    </div>
+                  </div>
+                  <div className="p-4 text-right">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">{dish.name}</h3>
+                    <p className="text-gray-600 text-sm">{dish.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Scroll Buttons (centered vertically on sides) */}
+        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 z-10">
+          <button
+            onClick={() => scroll("left")}
+            className="p-2 bg-yellow-100 rounded-full shadow mx-2"
+          >
+            <ChevronLeft className="text-yellow-600" />
+          </button>
+        </div>
+        <div className="absolute top-1/2 right-0 transform -translate-y-1/2 z-10">
+          <button
+            onClick={() => scroll("right")}
+            className="p-2 bg-yellow-100 rounded-full shadow mx-2"
+          >
+            <ChevronRight className="text-yellow-600" />
+          </button>
+        </div>
+      </div>
+
+      {/* Grid layout for larger screens */}
+      <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {activeCategory?.dishes.map((dish, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden flex flex-col"
+            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden flex flex-col"
           >
-            <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
+            <div className="relative h-56 overflow-hidden">
               <img
                 src={dish.image}
                 alt={dish.name}
@@ -180,12 +240,9 @@ export default function DishesSection() {
                 {dish.price}
               </div>
             </div>
-            <div className="p-4 flex flex-col justify-between flex-grow text-right">
+            <div className="p-4 text-right">
               <h3 className="text-xl font-bold text-gray-800 mb-2">{dish.name}</h3>
-              <p className="text-gray-600 text-sm mb-3">{dish.description}</p>
-              <div className="mt-auto text-sm text-yellow-600 font-semibold">
-                {/* Optional: repeat price or remove */}
-              </div>
+              <p className="text-gray-600 text-sm">{dish.description}</p>
             </div>
           </div>
         ))}
